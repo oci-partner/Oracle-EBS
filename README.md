@@ -1,16 +1,32 @@
-# Terraform modules for Oracle E-Business Suite on Oracle Cloud Infrastructure
+# Oracle EBS on OCI - Terraform modules for Partners
 
-The Terraform modules for Oracle E-Business Suite allow you to provision infrastructure for Oracle E-Business Suite on Oracle Cloud Infrastructure using Terraform. Oracle E-Business suite can be deployed on Oracle Cloud Infrastructure in single availability domain or multi availability domain architecture.The modules can be used to create infrastructure for Oracle E-Business Suite in single Availability Domain as well as multiple Availability Domains.
+## Summary
+Oracle E-Business suite architecture blueprint helps you design and execute a process in a systematic manner that is free from any loopholes and eliminates any guess works. This architecture blueprint captures every detail of your offline process and hence, streamlining the process becomes easy to implement Oracle E-Business suite on Oracle Cloud Infrastructure. This Oracle E-Business suite architecture is designed to be highly available for each layer of the application stack and highly secure to protects application from malicious and unwanted internet traffic while running on Oracle Cloud Infrastructure.
 
-### Architecture for Deploying Oracle E-Business Suite in a Single Availability domain
-![Architecture for Deploying Oracle E-Business Suite in a Single Availability domain](./_docs/single_availability_domain_ha_topology.png)
+Every production environment of Oracle E-Business suite requires additional 2-3 similar environment used for test/dev, QA or user acceptance. However, all those additional environments can be down size depending on nature of workload and type of usage. This architecture blueprint designed to run an Oracle E-Business suite production work load.   
 
-### Architecture for Deploying Oracle E-Business Suite in a multiple Availability domains
-![Architecture for Deploying Oracle E-Business Suite in Multiple Availability domains](./_docs/multiple_availability_domain_ha_topology.png)
+[Learn more about Oracle E-Business Suite](https://www.oracle.com/applications/ebusiness)
+[Learn more about Oracle Cloud Infrastructure](https://docs.cloud.oracle.com/iaas/Content/GSG/Concepts/baremetalintro.htm)
 
-For more information on Oracle E-Business Suite deployment architecture on Oracle Cloud Infrastructure, see
-- [Architecture for Deploying Oracle E-Business Suite in a Single Availability domain](https://docs.oracle.com/en/solutions/deploy-ebusiness-suite-oci/index.html#GUID-1F8ACA7B-C147-446F-A4A4-AD70E4ECCA66)
-- [Architecture for Deploying Oracle E-Business Suite in Multiple Availability domains](https://docs.oracle.com/en/solutions/deploy-ebusiness-suite-oci/index.html#GUID-43B8797E-A2BD-4CA2-A4A9-0E19DB15DA3B)
+## Target Audience 
+This blueprint is intended for Oracle partners and customers who want to implement and learn about the benefits and options for running Oracle E-Business suite on Oracle Cloud Infrastructure. This blueprint talks about the best practices for high availability, disaster recovery, security, and management of Oracle E-Business suite on Oracle Cloud Infrastructure. This architecture blueprint designed to scale up to 5000 concurrent users process at a 75% threshold point of app tier and database tier.
+
+## In-Scope services
+There are few other OCI integration services used on this architecture in addition to the OCI compute, network and storage components. For example, access management, auditing, policies, object storage and service gateway etc. are used to ensure the Oracle E-Business suite environment is secure and it supports business continuity in case of disaster. However, it is out of the scope to design this architecture to meet the individual customer RPO and RTO requirements. Individual customer needs to customize the architecture to meet their RPO and RTO requirement. 
+
+## Oracle EBS Architecture 
+At very high level there are three different tiers are part of Oracle E-Business Suite. Client tier connects to the application tier, where all application logic, form server, web server and concurrent processing server are running. The application server connects to database server to read and write data from the application tables stored in the Oracle database. A load balancer used to appropriately balance all user/client connections to application server. 
+
+| Component  | Function |
+| ------------- | ------------- |
+| EBS Application Server 1  | Application server running web services, form services and concurrent processing services. mainly used for high availability and parallel processing of client request. |
+| EBS Application Server 2  | Application server running web services, form services and concurrent processing services. mainly used for high availability and parallel processing of client request. |
+| EBS Application Server 3 | Application server running web services, form services and concurrent processing services. mainly used for high availability and parallel processing of client request. |
+| Load Balancer | Oracle Cloud Infrastructure load balancer. provides automatic load balancing of EBS client connection across multiple EBS application server. |
+| EBS Database Server | An Oracle database cloud service used to store application schemas for EBS application. |
+
+The following diagram illustrates the relationship between the components of the Oracle E-Business Suite deployment.
+[EBS Architecture](./_docs/EBS-Suite-Deployment.jpg)
 
 ## Prerequisites
 
