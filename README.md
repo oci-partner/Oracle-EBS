@@ -5,8 +5,8 @@ Oracle E-Business suite architecture blueprint helps you design and execute a pr
 
 Every production environment of Oracle E-Business suite requires additional 2-3 similar environment used for test/dev, QA or user acceptance. However, all those additional environments can be down size depending on nature of workload and type of usage. This architecture blueprint designed to run an Oracle E-Business suite production work load.   
 
-[Learn more about Oracle E-Business Suite](https://www.oracle.com/applications/ebusiness)
-[Learn more about Oracle Cloud Infrastructure](https://docs.cloud.oracle.com/iaas/Content/GSG/Concepts/baremetalintro.htm)
+- [Learn more about Oracle E-Business Suite](https://www.oracle.com/applications/ebusiness)
+- [Learn more about Oracle Cloud Infrastructure](https://docs.cloud.oracle.com/iaas/Content/GSG/Concepts/baremetalintro.htm)
 
 ## Target Audience 
 This blueprint is intended for Oracle partners and customers who want to implement and learn about the benefits and options for running Oracle E-Business suite on Oracle Cloud Infrastructure. This blueprint talks about the best practices for high availability, disaster recovery, security, and management of Oracle E-Business suite on Oracle Cloud Infrastructure. This architecture blueprint designed to scale up to 5000 concurrent users process at a 75% threshold point of app tier and database tier.
@@ -26,7 +26,7 @@ At very high level there are three different tiers are part of Oracle E-Business
 | EBS Database Server | An Oracle database cloud service used to store application schemas for EBS application. |
 
 The following diagram illustrates the relationship between the components of the Oracle E-Business Suite deployment.
-[EBS Architecture](./_docs/EBS-Suite-Deployment.jpg)
+![EBS Architecture](./_docs/EBS-Suite-Deployment.jpg)
 
 ## Prerequisites
 
@@ -153,7 +153,7 @@ The following inputs are required for terraform modules:
 
 ```hcl
 # AD (Availability Domain to use for creating EBS infrastructure) 
-AD = ["1","2"]
+AD = ["1"]
 
 # CIDR block of VCN to be created
 vcn_cidr = "172.16.0.0/16"
@@ -162,7 +162,7 @@ vcn_cidr = "172.16.0.0/16"
 vcn_dns_label = "ebsvcn"
 
 # Operating system version to be used for application instances
-linux_os_version = "7.5"
+linux_os_version = "7.6"
 
 # Timezone of compute instance
 timezone = "America/New_York"
@@ -204,10 +204,10 @@ db_license_model = "LICENSE_INCLUDED"
 db_version = "12.1.0.2"
 
 # Number of database nodes
-db_node_count = "2"
+db_node_count = "1"
 
 #Shape of Database nodes
-db_instance_shape = "VM.Standard2.4"
+db_instance_shape = "VM.Standard2.1"
 
 #Database name
 db_name = "EBSCDB"
@@ -236,147 +236,6 @@ load_balancer_shape = "100Mbps"
 #Listen port of load balancer
 load_balancer_listen_port = "8888"
 ```
-
-If you want to deploy Oracle E-Business Suite on Oracle Cloud Infrastructure in single availability domain architecture, set AD variable to one of the availability domain i.e. 1, 2 or 3. 
-
-```hcl
-AD = ["1"]
-```
-
-## Information about Oracle Cloud Infrastructure resources built by Terraform modules for Oracle E-Business Suite
-
-* It is recommended to use shared filesystem for Oracle E-Business Suite multi tier configuration. The Terraform modules create File     Storage service filesystem for single as well as multiple availability domain architecture. For a single availability domain architecture, a single filesystem is created. For multiple availability domain architecture, two such file systems are created, one in each availabilty domain. 
-
-* The filesystems can be synchronized by an rsync script in cron. The rsync snchronization script is placed in cron of root user and is commented by default. The script can be enabled to synchornize fileystems after implemenation of Oracle E-Business Suite. 
-
-  ```
-  # Credits to lucas.gomes@oracle.com
-  # crontab -l
-  */30 * * * * /usr/bin/flock -n /var/run/fss-sync-up-file-system.lck rsync -aHAXxv --numeric-ids --delete /u01/install/APPS/ /u01/install/APPSDR/
-
-  # cat /etc/cron.d/fss-sync-up-file-system
-  */30 * * * * /usr/bin/flock -n /var/run/fss-sync-up-file-system.lck rsync -aHAXxv --numeric-ids --delete /u01/install/APPS /u01/install/APPSDR
-  ```
-
-* The Terraform modules creates one private load balancer for single availability domain architecture and two private load balancers for multiple availability domain architecture. For a multiple availability domain architecture, the backend set of each private load balancer has application servers from respective availablity domains.
-
-* Separate pairs of SSH keys can be used for bastion host and rest of the compute infrastructure resources. It is also possible to use the same key. In that case, same key is required as input to instance and bastion instance variables in env-vars or env-vars.ps1 file.
-
-  For example,
-  ```
-  ### Public/private keys used on the instance
-  export TF_VAR_ssh_public_key=/home/oracle/tf/<mykey.pub>
-  export TF_VAR_ssh_private_key=/home/oracle/tf/<mykey.pem>
-
-  ### Public/private keys used on the bastion instance
-  export TF_VAR_bastion_ssh_public_key=/home/oracle/tf/<mykey.pub>
-  export TF_VAR_bastion_ssh_private_key=/home/oracle/tf/<mykey.pem>
-
-  ```
-  For terraform installations on Unix systems, the private half of SSH key pairs should be in OpenSSH format. The instances in private subnet can be reached via SSH on port 22 by allowing agent forwarding in Putty and using Putty authentication tool like Pageant. Note that this does not require copying private SSH key for instances to bastion host.
-
-* The terraform modules ensure that application instances are deployed across different Fault Domains within an availability domain. Fault Domains protect against unexpected hardware failures and against planned outages due to compute hardware maintenance. For Real application clusters database, each node of cluster is deployed in a separate Fault domains by default.
-
-* The terraform modules expose timezone variable which can be used to set timezone of provisioned compute instances. The modules uses cloud-init to do that. For database system, timezone has to be set manually using operating system specific procedure. Follow operating system specific documentation to do that.
-
-* The Terraform modules always use latest Oracle Linux image for the chosen operating system for provisioning compute instances. 
-There are chances that minor version of operating system gets upgraded and a new image gets published in Oracle Cloud Infrastructure console. In that case, always check the available version of image from oracle Cloud Infrastructure compute console to input this value. For example, if Oracle Linux version is chnaged from version 7.5 to 7.6, change this value from 7.5 to 7.6.  
-
-* The standby database has to be built manually after your Oracle E-Business Suite database is restored. For creating a standby database, see [Using Oracle Data Guard with the Database CLI](https://docs.cloud.oracle.com/iaas/Content/Database/Tasks/usingDG.htm?tocpath=Services%7CDatabase%7CBare%20Metal%20and%20Virtual%20Machine%20DB%20Systems%7C_____11)
-
-* The terraform version has been locked to 0.11.8 and Oracle Cloud Infrastructure provider version has been locked to 3.5.1 in provider.tf file. To use a version higher than these versions, change the values in the provider.tf file. The terraform modules may require changes for a successful run with a new terraform and Oracle Cloud Infrastructure provider version. 
-
-
-## Cloud-init template for application servers
-
-Following is the cloud-init template used to install Oracle E-Business Suite prerequisite RPMs and mount shared file systems on application servers:
-
-```yaml
-#cloud-config
-timezone: "${timezone}"
-
-packages:
-  - rsync
-  - nfs-utils
-  - ntp
-  - oracle-ebs-server-R12-preinstall
-
-runcmd:
-  - sudo mkdir -p ${src_mount_path}
-  - sudo mount ${src_mount_target_private_ip}:${src_export_path} ${src_mount_path}
-  - sudo chown oracle:oinstall ${src_mount_path}
-  - echo ${src_mount_target_private_ip}:${src_export_path} ${src_mount_path} nfs tcp,vers=3 >> /etc/fstab
-  # Run firewall command to enable to open ports
-  - firewall-offline-cmd --port=${app_instance_listen_port}:tcp
-  - /bin/systemctl restart firewalld
-```
-
-## Unix bash commands to configure rsync on application servers.
-
-These are the unix commands run to enable rsync across Oracle E-Business Suite application servers.
-
-```
-#Copyright © 2018, Oracle and/or its affiliates. All rights reserved.
-
-#The Universal Permissive License (UPL), Version 1.0
-
-
-#/bin/bash
-sudo mkdir -p ${dst_mount_path}
-sudo mount ${dst_mount_target_private_ip}:${dst_export_path} ${dst_mount_path}
-sudo chown oracle:oinstall ${dst_mount_path}
-sudo crontab /etc/cron.d/fss-sync-up-file-system
-echo '${dst_mount_target_private_ip}:${dst_export_path} ${dst_mount_path} nfs tcp,vers=3' | sudo tee -a /etc/fstab
-echo '#${fss_sync_frequency} /usr/bin/flock -n /var/run/fss-sync-up-file-system.lck rsync -aHAXxv --numeric-ids --delete ${src_mount_path} ${dst_mount_path}' | sudo tee -a /etc/cron.d/fss-sync-up-file-system
-touch /tmp/rsync.done
-```
-## How to use this module
-
-1) Go to EBusinessSuite directory
-
-```
-$ cd EBusinessSuite
-```
-
-2) Update **env-vars** (or **env-vars.ps1** for Windows) with the required information. The file contains definitions of environment variables for your Oracle Cloud Infrastructure tenancy.
-
-3) Update **terraform.tfvars** with the inputs for the architecture that you want to build. A running sample terraform.tfvars file for multiple availability domain architecture is available in previous section. The contents of sample file can be copied to create a running terraform.tfvars input file. Update db_admin_password with actual password in terraform.tfvars file.
-
-4) Initialize Terraform. This will also download the latest terraform oci provider.
-
-
-  ```
-  $ terraform init
-  ```
-  ![terraform init](./_docs/terraform-init.png)
-
-
-5) Set environment variables by running source **env-vars** on your UNIX system or by running **env-vars.ps1** on your Windows system.
-
-  ```
-  $ source env-vars
-  ```
-
-6) Run terraform apply to create the infrastructure:
-
-  ```
-  $ terraform apply
-  ```
- 
-  When you’re prompted to confirm the action, enter **yes**.
-
-  When all components have been created, Terraform displays a completion message. For example: Apply complete! Resources: 47 added, 0 changed, 0 destroyed.
-
-
-7) If you want to delete the infrastructure, run:
-
-  ```
-  $ terraform destroy
-  ```
-
-  When you’re prompted to confirm the action, enter **yes**.
-
-
 # License
 Copyright © 2018, Oracle and/or its affiliates. All rights reserved. 
 The Universal Permissive License (UPL), Version 1.0 
