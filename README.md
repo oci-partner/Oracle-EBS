@@ -237,6 +237,6 @@ load_balancer_shape = "100Mbps"
 load_balancer_listen_port = "8888"
 ```
 # License
-Copyright © 2018, Oracle and/or its affiliates. All rights reserved. 
+Copyright © 2019, Oracle and/or its affiliates. All rights reserved. 
 The Universal Permissive License (UPL), Version 1.0 
 Please see LICENSE.md for full details
