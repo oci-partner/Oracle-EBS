@@ -28,6 +28,14 @@ At very high level there are three different tiers are part of Oracle E-Business
 The following diagram illustrates the relationship between the components of the Oracle E-Business Suite deployment.
 ![EBS Architecture](./_docs/EBS-Suite-Deployment.jpg)
 
+## Oracle EBS Architecture on OCI
+This architecture is designed to process up to 5000 concurrent users on an Oracle E-Business suite environment. This architecture also designed to run Oracle E-Business Suite on a single AD (Availability Domain) or multiple ADs Oracle Cloud Infrastructure data center region, considering the application availability from single point of failure and any kind of disaster.
+
+There are three application servers and a quarter rack Exadata cloud service database used to design the architecture for each site to run Oracle E-Business Suite on an Oracle Cloud Infrastructure data center. Oracle Cloud Infrastructure VM.Standard2.16 compute shape used for application tier and  a quarter rack Exadata cloud database X7 shape used for database tier. There is a public load balancer used to appropriately route and balance the user traffic to the application servers.
+
+![](./_docs/SingleAD-CrossRegionDR.jpg)
+![](./_docs/Multiple-AD-DR.jpg)
+
 ## Prerequisites
 
 1. [Download and install Terraform](https://www.terraform.io/downloads.html) (v0.11.8 or later)
