@@ -25,6 +25,9 @@ compute_instance_user = "opc"
 #Environment prefix to define name of resources
 ebs_env_prefix = "ebsdemo"
 
+#Environment prefix to define name of DB
+db_hostname_prefix = "dbdemo"
+
 # Number of application instances to be created
 ebs_app_instance_count = "2"
 
@@ -47,13 +50,13 @@ db_edition = "ENTERPRISE_EDITION_EXTREME_PERFORMANCE"
 db_license_model = "LICENSE_INCLUDED"
 
 # Database version
-db_version = "12.1.0.2"
+db_version = "18.0.0.0"
 
 # Number of database nodes
-db_node_count = "1"
+db_node_count = "2"
 
 #Shape of Database nodes
-db_instance_shape = "VM.Standard2.1"
+db_instance_shape = "VM.Standard2.2"
 
 #Database name
 db_name = "EBSCDB"
