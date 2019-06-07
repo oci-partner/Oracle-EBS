@@ -2,13 +2,13 @@
 
 The Universal Permissive License (UPL), Version 1.0*/
 
-
 locals {
   // VCN is /16
   bastion_subnet_prefix = "${cidrsubnet("${var.vcn_cidr}", 6, 0)}"
   lb_subnet_prefix      = "${cidrsubnet("${var.vcn_cidr}", 6, 1)}"
   app_subnet_prefix     = "${cidrsubnet("${var.vcn_cidr}", 6, 2)}"
   db_subnet_prefix      = "${cidrsubnet("${var.vcn_cidr}", 6, 3)}"
+  lb_private_subnet_prefix = "${cidrsubnet("${var.vcn_cidr}", 6, 4)}"
 }
 
 # Create Virtual Cloud Network (VCN)
@@ -26,14 +26,14 @@ module "bastion_subnet" {
 
   compartment_ocid    = "${var.compartment_ocid}"
   AD                  = "${var.AD}"
-  availability_domain = ["${data.template_file.deployment_ad.*.rendered}"]
+  #availability_domain = ["${data.template_file.deployment_ad.*.rendered}"]
   vcn_id              = "${module.create_vcn.vcnid}"
   vcn_subnet_cidr     =  [
     "${cidrsubnet(local.bastion_subnet_prefix, 2, 0)}",
     "${cidrsubnet(local.bastion_subnet_prefix, 2, 1)}",
     "${cidrsubnet(local.bastion_subnet_prefix, 2, 2)}",
   ]
-  dns_label           = "bassubad"
+  dns_label           = "basnet"
   dhcp_options_id     = "${module.create_vcn.default_dhcp_id}"
   route_table_id      = "${oci_core_route_table.PublicRT.id}"
   security_list_ids   = ["${oci_core_security_list.BastionSecList.id}"]
@@ -41,25 +41,43 @@ module "bastion_subnet" {
 }
 
 # Create Load balancer subnet
-module "lb_subnet" {
+module "lb_public_subnet" {
   source  = "./modules/network/subnets"
 
   compartment_ocid    = "${var.compartment_ocid}"
   AD                  = "${var.AD}"
-  availability_domain = ["${data.template_file.deployment_ad.*.rendered}"]
+  #availability_domain = ["${data.template_file.deployment_ad.*.rendered}"]
   vcn_id              = "${module.create_vcn.vcnid}"
   vcn_subnet_cidr     =  [
     "${cidrsubnet(local.lb_subnet_prefix, 2, 0)}",
     "${cidrsubnet(local.lb_subnet_prefix, 2, 1)}",
     "${cidrsubnet(local.lb_subnet_prefix, 2, 2)}",
   ]
-  dns_label           = "lbsubad"
+  dns_label           = "lbpubnet"
+  dhcp_options_id     = "${module.create_vcn.default_dhcp_id}"
+  route_table_id      = "${oci_core_route_table.PrivateRT.id}"
+  security_list_ids   = ["${oci_core_security_list.LBSecList.id}"]
+  private_subnet      = "False"
+}
+
+module "lb_private_subnet" {
+  source  = "./modules/network/subnets"
+
+  compartment_ocid    = "${var.compartment_ocid}"
+  AD                  = "${var.AD}"
+  #availability_domain = ["${data.template_file.deployment_ad.*.rendered}"]
+  vcn_id              = "${module.create_vcn.vcnid}"
+  vcn_subnet_cidr     =  [
+    "${cidrsubnet(local.lb_private_subnet_prefix, 2, 0)}",
+    "${cidrsubnet(local.lb_private_subnet_prefix, 2, 1)}",
+    "${cidrsubnet(local.lb_private_subnet_prefix, 2, 2)}",
+  ]
+  dns_label           = "lbprinet"
   dhcp_options_id     = "${module.create_vcn.default_dhcp_id}"
   route_table_id      = "${oci_core_route_table.PrivateRT.id}"
   security_list_ids   = ["${oci_core_security_list.LBSecList.id}"]
   private_subnet      = "True"
 }
-
 
 # Create Application subnet
 module "app_subnet" {
@@ -67,14 +85,14 @@ module "app_subnet" {
 
   compartment_ocid    = "${var.compartment_ocid}"
   AD                  = "${var.AD}"
-  availability_domain = ["${data.template_file.deployment_ad.*.rendered}"]
+  #availability_domain = ["${data.template_file.deployment_ad.*.rendered}"]
   vcn_id              = "${module.create_vcn.vcnid}"
   vcn_subnet_cidr     =  [
     "${cidrsubnet(local.app_subnet_prefix, 2, 0)}",
     "${cidrsubnet(local.app_subnet_prefix, 2, 1)}",
     "${cidrsubnet(local.app_subnet_prefix, 2, 2)}",
   ]
-  dns_label           = "appsubad"
+  dns_label           = "appnet"
   dhcp_options_id     = "${module.create_vcn.default_dhcp_id}"
   route_table_id      = "${oci_core_route_table.PrivateRT.id}"
   security_list_ids   = ["${oci_core_security_list.AppSecList.id}"]
@@ -88,14 +106,14 @@ module "db_subnet" {
 
   compartment_ocid    = "${var.compartment_ocid}"
   AD                  = "${var.AD}"
-  availability_domain = ["${data.template_file.deployment_ad.*.rendered}"]
+  #availability_domain = ["${data.template_file.deployment_ad.*.rendered}"]
   vcn_id              = "${module.create_vcn.vcnid}"
   vcn_subnet_cidr     =  [
     "${cidrsubnet(local.db_subnet_prefix, 2, 0)}",
     "${cidrsubnet(local.db_subnet_prefix, 2, 1)}",
     "${cidrsubnet(local.db_subnet_prefix, 2, 2)}",
   ]
-  dns_label           = "dbsubad"
+  dns_label           = "dbnet"
   dhcp_options_id     = "${module.create_vcn.default_dhcp_id}"
   route_table_id      = "${oci_core_route_table.PrivateRT.id}"
   security_list_ids   = ["${oci_core_security_list.DBSecList.id}"]
@@ -146,6 +164,7 @@ module "create_app" {
 }
 
 # Create Database system
+
   module "create_db" {
   source  = "./modules/dbsystem"
 
@@ -169,16 +188,33 @@ module "create_app" {
 }
 
 # Create Load Balancer
-module "create_lb" {
+module "create_public_lb" {
   source  = "./modules/loadbalancer"
 
   compartment_ocid              = "${var.compartment_ocid}"
   AD                            = "${var.AD}"
   availability_domain           = ["${data.template_file.deployment_ad.*.rendered}"]
   load_balancer_shape           = "${var.load_balancer_shape}"
-  load_balancer_subnet          = ["${module.lb_subnet.subnetid}"]
-  load_balancer_name            = "${var.ebs_env_prefix}lb${substr(var.region, 3, 3)}"
-  load_balancer_hostname        = "${var.load_balancer_hostname}"
+  load_balancer_subnet          = ["${module.lb_public_subnet.subnetid}"]
+  load_balancer_name            = "${var.ebs_env_prefix}publb${substr(var.region, 3, 3)}"
+  load_balancer_hostname        = "${var.public_load_balancer_hostname}"
+  load_balancer_listen_port     = "${var.load_balancer_listen_port}"
+  compute_instance_listen_port  = "${var.ebs_app_instance_listen_port}"
+  compute_instance_count        = "${var.ebs_app_instance_count}"
+  be_ip_addresses               = ["${module.create_app.AppsPrvIPs}"]
+  load_balancer_private         = "False"
+}
+
+module "create_private_lb" {
+  source  = "./modules/loadbalancer"
+
+  compartment_ocid              = "${var.compartment_ocid}"
+  AD                            = "${var.AD}"
+  availability_domain           = ["${data.template_file.deployment_ad.*.rendered}"]
+  load_balancer_shape           = "${var.load_balancer_shape}"
+  load_balancer_subnet          = ["${module.lb_private_subnet.subnetid}"]
+  load_balancer_name            = "${var.ebs_env_prefix}prilb${substr(var.region, 3, 3)}"
+  load_balancer_hostname        = "${var.private_load_balancer_hostname}"
   load_balancer_listen_port     = "${var.load_balancer_listen_port}"
   compute_instance_listen_port  = "${var.ebs_app_instance_listen_port}"
   compute_instance_count        = "${var.ebs_app_instance_count}"

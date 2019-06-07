@@ -23,13 +23,13 @@ compute_boot_volume_size_in_gb = "100"
 compute_instance_user = "opc"
 
 #Environment prefix to define name of resources
-ebs_env_prefix = "ebsdemo"
+ebs_env_prefix = "ebsenv"
 
 #Environment prefix to define name of DB
 db_hostname_prefix = "dbdemo"
 
 # Number of application instances to be created
-ebs_app_instance_count = "2"
+ebs_app_instance_count = "3"
 
 # Shape of app instance
 ebs_app_instance_shape = "VM.Standard2.2"
@@ -53,10 +53,10 @@ db_license_model = "LICENSE_INCLUDED"
 db_version = "18.0.0.0"
 
 # Number of database nodes
-db_node_count = "2"
+db_node_count = "1"
 
 #Shape of Database nodes
-db_instance_shape = "VM.Standard2.2"
+db_instance_shape = "VM.Standard2.1"
 
 #Database name
 db_name = "EBSCDB"
@@ -76,8 +76,11 @@ db_nls_characterset = "AL16UTF16"
 # Pluggable database name
 db_pdb_name = "DUMMYPDB"
 
-# Hostname of Load Balancer
-load_balancer_hostname = "ebs.example.com"
+#Public Hostname of Load Balancer
+public_load_balancer_hostname = "pub.ebs.example.com"
+
+#Private Hostname of Load Balancer
+private_load_balancer_hostname = "pri.ebs.example.com"
 
 # Shape of Load Balancer
 load_balancer_shape = "100Mbps"

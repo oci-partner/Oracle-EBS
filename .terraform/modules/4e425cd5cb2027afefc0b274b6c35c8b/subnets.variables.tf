@@ -9,10 +9,10 @@ variable "tenancy_ocid" {
 variable "compartment_ocid" {
     description = "Compartment name"
 }
-variable "availability_domain" {
+/*variable "availability_domain" {
     description = "Availability domain"
     type        = "list"
-}
+}*/
 variable "AD" {
     description = "Availability domain"
     type        = "list"

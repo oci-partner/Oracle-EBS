@@ -129,8 +129,13 @@ variable load_balancer_private {
     description = "Whether private Load balancer"
     default = true
 }
-variable load_balancer_hostname {
-    description = "Load Balancer hostname"
+variable public_load_balancer_hostname {
+    description = "Public Load Balancer Hostname"
+}
+
+
+variable private_load_balancer_hostname {
+    description = "Private Load Balancer Hostname"
 }
 
 variable load_balancer_listen_port {

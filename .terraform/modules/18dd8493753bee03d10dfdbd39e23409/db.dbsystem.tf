@@ -2,6 +2,7 @@
 
 The Universal Permissive License (UPL), Version 1.0*/
 
+/*
 resource "oci_database_db_system" "database" {
     #Required
     count = "${length(var.availability_domain)}"
@@ -59,3 +60,4 @@ resource "oci_database_db_system" "database" {
     #sparse_diskgroup = "${var.db_system_sparse_diskgroup}"
     #time_zone = "${var.db_system_time_zone}"
 }
+*/
