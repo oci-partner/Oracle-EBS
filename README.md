@@ -28,26 +28,46 @@ Each directory represents one EBS environment structure on its own, with terrafo
     
 ## Inputs required in the environment "env-vars" file
 
+The following inputs are required for terraform execution:
+
+| Argument                   | Description |
+| TF_LOG | Configuration for the LOG level of terraform execution. |
+| TF_LOG_PATH | Local folder path where the log is created during terraform execution. |
+| TF_VAR_tenancy_ocid | Your OCI tenancy ID. |
+| TF_VAR_user_ocid | Your user ID from your tenancy, this's the user that you configure to executes the terraform script. |
+| TF_VAR_compartment_ocid | The OCID for the compartment on your tenancy to provision the resources. |
+| TF_VAR_fingerprint | Your authentication key fingerprint that you configure on the OCI console. |
+| TF_VAR_private_key_path | Path to your local directory were you have your private key file. |
+| TF_VAR_region | The OCI region where you are executing the terraform script. |
+| TF_VAR_ssh_public_key | The path to your local public key, that you configure on the provisioned instances on OCI tenancy for this terraform script. |
+| TF_VAR_ssh_private_key | The path to your local private key, that you configure on the provisioned instances on OCI tenancy for this terraform script. |
+| TF_VAR_bastion_ssh_public_key | The path to your local public key, that you configure on the provisioned the bastion instance on OCI tenancy for this terraform script. |
+| TF_VAR_bastion_ssh_private_key | The path to your local private key, that you configure on the provisioned the bastion instance on OCI tenancy for this terraform script. |
+
+##### Sample env-vars file to execute
+
 ```hcl
+#!/bin/bash
 #LOG LEVEL
-TF_LOG: Configuration for the LOG level of terraform execution.
-TF_LOG_PATH: Local folder path where the log is created during terraform execution.
+export TF_LOG=INFO
+export TF_LOG_PATH=~/.projects_oracle/Multi-AD-Architecture/multi-ad.log
 
 #GLOBAL
-TF_VAR_tenancy_ocid: Your OCI tenancy ID
-TF_VAR_user_ocid: Your user ID from your tenancy, this's the user that you configure to executes the terraform script.
-TF_VAR_compartment_ocid: The OCID for the compartment on your tenancy to provision the resources.
-TF_VAR_fingerprint: Your authentication key fingerprint that you configure on the OCI console.
-TF_VAR_private_key_path: Path to your local directory were you have your private key file.
-TF_VAR_region: The OCI region where you are executing the terraform script.
+export TF_VAR_tenancy_ocid="<your tenancy ocid>"
+export TF_VAR_user_ocid="<your user ocid>"
+export TF_VAR_compartment_ocid="<your compartment ocid>"
+export TF_VAR_fingerprint="33:93:45:e5:ca:82:df:ff:ec:88:97:de:44:89:41:5c"
+export TF_VAR_private_key_path="~/.oci/oci_api_key.pem"
+export TF_VAR_region="us-ashburn-1"
+
 
 #SSH Keys for apps and db
-TF_VAR_ssh_public_key: The path to your local public key, that you configure on the provisioned instances on OCI tenancy for this terraform script.
-TF_VAR_ssh_private_key: The path to your local private key, that you configure on the provisioned instances on OCI tenancy for this terraform script.
+export TF_VAR_ssh_public_key=~/.oci/ssh_keys/key.pub
+export TF_VAR_ssh_private_key=~/.oci/ssh_keys/key
 
-# Public/private keys used on the bastion instance
-TF_VAR_bastion_ssh_public_key: The path to your local public key, that you configure on the provisioned the bastion instance on OCI tenancy for this terraform script.
-TF_VAR_bastion_ssh_private_key: The path to your local private key, that you configure on the provisioned the bastion instance on OCI tenancy for this terraform script.
+### Public/private keys used on the bastion instance
+export TF_VAR_bastion_ssh_public_key=~/.ssh/id_rsa.pub
+export TF_VAR_bastion_ssh_private_key=~/.ssh/id_rsa
 ```
 ## Inputs required in the terraform.tfvars file
 
