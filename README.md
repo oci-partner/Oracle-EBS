@@ -45,6 +45,8 @@ The following inputs are required for terraform execution:
 | TF_VAR_bastion_ssh_public_key | The path to your local public key, that you configure on the provisioned the bastion instance on OCI tenancy for this terraform script. |
 | TF_VAR_bastion_ssh_private_key | The path to your local private key, that you configure on the provisioned the bastion instance on OCI tenancy for this terraform script. |
 
+                                                                                                                                                               |
+
 ##### Sample env-vars file to execute
 
 ```hcl
