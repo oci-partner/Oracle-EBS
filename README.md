@@ -14,16 +14,41 @@ To execute the terraform script, please follow these instructions:
 ## Oracle E-Business Suite Terraform modules structure
 Each directory represents one EBS environment structure on its own, with terraform and configuration files:
 
+- [**docs**]: Folder for document images of the Architecture
 - [**modules**]: The modules directory contain all the modules required for creating Oracle Cloud Infrastructure resources.
   - [bastion]: This module is used to create bastion hosts.
   - [compute]: This module is used  to create unix and windows compute instances.
   - [dbsystem]: This module is used to create Oracle Cloud Infrastructure database system.
   - [loadbalancer]: This module is used to create Oracle Cloud Infrastructure load Balancing service.
 - [**Multi-AD-Architecture**]: This is the EBS environment for Multi-AD Architecture on the same region deployment.
+- [**printscreens**]: Some print screens from the terraform execution of the environments.
 - [**Single-AD-DR-Architecture**]: This is the EBS environment for Single AD with DR on different region deployment.
   - [Region1]: The first active region for EBS deployment.
   - [Region2]: The DR passive region for EBS deployment.
     
+## Inputs required in the environment "env-vars" file
+
+```hcl
+#LOG LEVEL
+TF_LOG: Configuration for the LOG level of terraform execution.
+TF_LOG_PATH: Local folder path where the log is created during terraform execution.
+
+#GLOBAL
+TF_VAR_tenancy_ocid: Your OCI tenancy ID
+TF_VAR_user_ocid: Your user ID from your tenancy, this's the user that you configure to executes the terraform script.
+TF_VAR_compartment_ocid: The OCID for the compartment on your tenancy to provision the resources.
+TF_VAR_fingerprint: Your authentication key fingerprint that you configure on the OCI console.
+TF_VAR_private_key_path: Path to your local directory were you have your private key file.
+TF_VAR_region: The OCI region where you are executing the terraform script.
+
+#SSH Keys for apps and db
+TF_VAR_ssh_public_key: The path to your local public key, that you configure on the provisioned instances on OCI tenancy for this terraform script.
+TF_VAR_ssh_private_key: The path to your local private key, that you configure on the provisioned instances on OCI tenancy for this terraform script.
+
+# Public/private keys used on the bastion instance
+TF_VAR_bastion_ssh_public_key: The path to your local public key, that you configure on the provisioned the bastion instance on OCI tenancy for this terraform script.
+TF_VAR_bastion_ssh_private_key: The path to your local private key, that you configure on the provisioned the bastion instance on OCI tenancy for this terraform script.
+```
 ## Inputs required in the terraform.tfvars file
 
 The following inputs are required for terraform modules:
@@ -32,6 +57,14 @@ The following inputs are required for terraform modules:
 | -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | AD                         | Availability Domain for Oracle E-Business Suite Deployment. This variable drives the Oracle E-Business Suite architecture to be deployed. Setting AD = ["1"] deploys infrastructure in single availability domain (Availabilty domain 1 of the tenancy in this case) and AD = ["1","2"] deploys infrastructure in multiple ADs (Availability domains 1 and 2 of the tenancy in this case). |
 | vcn_cidr                   | CIDR block of the VCN (Virtual Cloud Network) to be created.                                                                                                                                                                                                      |
+| bastion_subnet_cidr_block  | CIDR block of the sub network where bastion host instance is created. |
+| app_subnet_cidr_block      | CIDR block of the sub network where EBS application servers instances is created. |
+| public_lb_subnet_cidr_block | CIDR block of the sub network where public load balancer is created. |
+| private_lb_subnet_cidr_block | CIDR block of the sub network where private load balancer is created. |
+| database_subnet_cidr_block | CIDR block of the sub network where EBS database is created. |
+| filestorage_subnet_cidr_block | CIDR block of the sub network where file storage is created. |
+| backup_subnet_cidr_block | CIDR block of the hexadata backup sub network is created. |
+| onpremises_network_cidr_block | CIDR block of the on-premises network to access EBS using the private load balancer. | 
 | vcn_dns_label              | DNS Label of the VCN (Virtual Cloud Network) to be created.                                                                                                                                                                                                                                                                                                                               |
 | linux_os_version           | Operating system version of Oracle Linux for compute instances. The terraform module for compute instances always pick up the latest image available for the chosen Oracle Linux version in the region.                                                                                                                        |
 | timezone                   | Timezone of compute instances.                                                                                                                                                                                                                                                                                                                                  |
@@ -147,7 +180,3 @@ load_balancer_shape = "100Mbps"
 #Listen port of load balancer
 load_balancer_listen_port = "8888"
 ```
-# License
-Copyright © 2019, Oracle and/or its affiliates. All rights reserved. 
-The Universal Permissive License (UPL), Version 1.0 
-Please see LICENSE.md for full details
