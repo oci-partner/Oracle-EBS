@@ -10,8 +10,12 @@ variable "availability_domain" {
     description = "Availability domain"
     type        = "list"
 }
+variable "lb_count" {
+    description = "Number of Load Balancers"
+    type= "list"
+}
 variable "AD" {
-    description = "Availability domain"
+    description = "Number of ADs"
     type= "list"
 }
 

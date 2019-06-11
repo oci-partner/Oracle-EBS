@@ -3,99 +3,26 @@
 ## Summary
 This repository covers the terraform code for EBS on OCI, the respository is organized into two diferent architectures blueprint:
 
-- [Single AD with DR on different regions]
-- [Multi AD with the same region]
+- Single AD with DR on different regions
+- Multi AD with the same region
 
 To execute the terraform script, please follow these instructions:
 
 - [Configure your tenancy and user for terraform script](https://docs.cloud.oracle.com/iaas/Content/API/SDKDocs/terraformgetstarted.htm)
-
-
-
-## Prerequisites
-
-1. [Download and install Terraform](https://www.terraform.io/downloads.html) (v0.11.8 or later)
-2. Export OCI credentials using guidance at [Export Credentials](https://www.terraform.io/docs/providers/oci/index.html).
+- [Export your credentials](https://www.terraform.io/docs/providers/oci/index.html)
 
 ## Oracle E-Business Suite Terraform modules structure
-
-Terraform modules for Oracle E-Business Suite has the following structure:
-
-```
-.
-├── datasources.tf
-├── _docs
-│   ├── multiple_availability_domain_ha_topology.png
-│   ├── single_availability_domain_ha_topology.png
-│   └── terraform-init.png
-├── env-vars
-├── env-vars.ps1
-├── LICENSE.md
-├── main.tf
-├── modules
-│   ├── bastion
-│   │   ├── bastion.outputs.tf
-│   │   ├── bastion.tf
-│   │   └── bastion.vars.tf
-│   ├── compute
-│   │   ├── compute.data.tf
-│   │   ├── compute.outputs.tf
-│   │   ├── compute.rsync-remote-exec.tf
-│   │   ├── compute.tf
-│   │   ├── compute.variables.tf
-│   │   ├── fss.tf
-│   │   └── userdata
-│   │       ├── bootstrap.tpl
-│   │       └── rsync.sh
-│   ├── database
-│   │   ├── db.datasources.tf
-│   │   ├── db.dbsystem.tf
-│   │   └── db.variables.tf
-│   ├── loadbalancer
-│   │   ├── lb.tf
-│   │   └── lb.variables.tf
-│   └── network
-│       ├── subnets
-│       │   ├── subnets.outputs.tf
-│       │   ├── subnets.tf
-│       │   └── subnets.variables.tf
-│       └── vcn
-│           ├── vcn.data.tf
-│           ├── vcn.outputs.tf
-│           ├── vcn.tf
-│           └── vcn.vars.tf
-├── outputs.tf
-├── provider.tf
-├── README.md
-├── routetables.tf
-├── seclists.tf
-├── terraform.tfvars
-└── variables.tf
-
-10 directories, 38 files
-
-```
-
-- [**root**]:
-  - [env-vars]: This is an environment file to set terraform environment variables on UNIX systems.
-  - [env-vars.ps1]: This is an environment file to set terraform environment variables on Windows systems.
-  - [datasources.tf]: This is terraform data source file to fetch data for Oracle Cloud Infrastructure resources.
-  - [main.tf]: At root level, main.tf calls different modules to create Oracle Cloud Infrastructure resources. 
-  - [outputs.tf]: This is the terraform outputs file.
-  - [provider.tf]: This is the terraform provider file that defines the provider (Oracle Cloud Infrastructure) and authentication information.
-  - [variables.tf]: This is the terraform variables file to declare variables.
-  - [routetables.tf]: This file creates route tables.
-  - [seclists.tf]: This file creates security lists.
-  - [terraform.tfvars]: This is an input file to pass values to declared variables.
+Each directory represents one EBS environment structure on its own, with terraform and configuration files:
 
 - [**modules**]: The modules directory contain all the modules required for creating Oracle Cloud Infrastructure resources.
   - [bastion]: This module is used to create bastion hosts.
   - [compute]: This module is used  to create unix and windows compute instances.
   - [dbsystem]: This module is used to create Oracle Cloud Infrastructure database system.
   - [loadbalancer]: This module is used to create Oracle Cloud Infrastructure load Balancing service.
-  - [network]: This module is used to create network resources like VCN (Virtual Cloud Network),subnets, internet gateway, service gateway, dynamic routing gateway and NAT (network Address Translation) gateway.
-    - [vcn]: This sub module creates the VCN, internet gateway, service gateway, dynamic routing gateway and NAT gateway.
-    - [subnets]: This sub module creates the subnets within a VCN.
+- [**Multi-AD-Architecture**]: This is the EBS environment for Multi-AD Architecture on the same region deployment.
+- [**Single-AD-DR-Architecture**]: This is the EBS environment for Single AD with DR on different region deployment.
+  - [Region1]: The first active region for EBS deployment.
+  - [Region2]: The DR passive region for EBS deployment.
     
 ## Inputs required in the terraform.tfvars file
 

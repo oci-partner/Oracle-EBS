@@ -6,7 +6,6 @@ The Universal Permissive License (UPL), Version 1.0*/
 resource "oci_core_instance" "compute" {
   count               = "${var.compute_instance_count}"
   availability_domain = "${element(var.availability_domain, count.index)}"
-  #display_name        = "${var.compute_hostname_prefix}${element(var.AD,count.index)}${count.index + 1}"
   display_name        = "${var.compute_hostname_prefix}-${count.index + 1}"
   fault_domain        = "${element(var.fault_domain, count.index)}"
   compartment_id      = "${var.compartment_ocid}" 

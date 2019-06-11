@@ -192,6 +192,15 @@ resource "oci_core_security_list" "publbseclist" {
             min = "443"
         }
     }
+
+    egress_security_rules {
+        destination = "${var.app_subnet_cidr_block}"
+        protocol = "6"
+        tcp_options {
+            min = "${var.load_balancer_listen_port}"
+            max = "${var.load_balancer_listen_port}"
+        }
+    }
 }
 resource "oci_core_security_list" "privlbseclist" {
     #Required
@@ -208,6 +217,15 @@ resource "oci_core_security_list" "privlbseclist" {
         tcp_options {
             max = "443"
             min = "443"
+        }
+    }
+
+    egress_security_rules {
+        destination = "${var.app_subnet_cidr_block}"
+        protocol = "6"
+        tcp_options {
+            min = "${var.load_balancer_listen_port}"
+            max = "${var.load_balancer_listen_port}"
         }
     }
 }

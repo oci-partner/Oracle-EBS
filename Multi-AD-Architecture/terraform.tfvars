@@ -2,16 +2,16 @@
 AD = ["1","2"]
 
 # CIDR block of VCN to be created
-vcn_cidr = "172.16.0.0/16"
+vcn_cidr = "10.0.0.0/16"
 
 #subnet cidr block
-bastion_subnet_cidr_block = "172.16.10.0/24"
-app_subnet_cidr_block = "172.16.20.0/24"
-public_lb_subnet_cidr_block = "172.16.30.0/24"
-private_lb_subnet_cidr_block = "172.16.40.0/24"
-database_subnet_cidr_block = "172.16.50.0/24"
-filestorage_subnet_cidr_block = "172.16.60.0/24"
-backup_subnet_cidr_block = "172.16.70.0/24"
+bastion_subnet_cidr_block = "10.0.4.0/24"
+app_subnet_cidr_block = "10.0.3.0/24"
+public_lb_subnet_cidr_block = "10.0.5.0/24"
+private_lb_subnet_cidr_block = "10.0.6.0/24"
+database_subnet_cidr_block = "10.0.1.0/24"
+filestorage_subnet_cidr_block = "10.0.7.0/24"
+backup_subnet_cidr_block = "10.0.2.0/24"
 
 #customer onpremises DC network
 onpremises_network_cidr_block = "192.168.10.0/24"
@@ -92,7 +92,7 @@ db_pdb_name = "DUMMYPDB"
 load_balancer_shape = "100Mbps"
 
 #Listen port of load balancer
-load_balancer_listen_port = "8888"
+load_balancer_listen_port = "8000"
 
 #Public Hostname of Load Balancer
 public_load_balancer_hostname = "pub.ebs.example.com"

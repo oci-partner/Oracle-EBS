@@ -9,7 +9,8 @@ resource "random_integer" "rand" {
 }
 
 locals {
-        enable_rsync       = "${length(var.availability_domain) >= "2" ? 1 : 0}"
+        //enable_rsync       = "${length(var.availability_domain) >= "2" ? 1 : 0}"
+        enable_rsync       = "0"
 }
 
 

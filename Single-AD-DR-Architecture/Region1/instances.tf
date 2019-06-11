@@ -1,5 +1,5 @@
 module "create_bastion" {
-    source = "./modules/bastion"
+    source = "../../modules/bastion"
     compartment_ocid        = "${var.compartment_ocid}"
     AD                      = "${var.AD}"
     availability_domain     = ["${data.template_file.deployment_ad.*.rendered}"]
@@ -10,7 +10,7 @@ module "create_bastion" {
     bastion_ssh_public_key  = "${var.bastion_ssh_public_key}"
 }
 module "create_app" {
-    source  = "./modules/compute"
+    source  = "../../modules/compute"
 
     compartment_ocid                = "${var.compartment_ocid}"
     AD                              = "${var.AD}"
@@ -37,7 +37,7 @@ module "create_app" {
 }
 
 module "create_db" {
-    source  = "./modules/dbsystem"
+    source  = "../../modules/dbsystem"
 
     compartment_ocid      = "${var.compartment_ocid}"
     AD                    = "${var.AD}"
@@ -58,7 +58,7 @@ module "create_db" {
     db_pdb_name           = "${var.db_pdb_name}"
 }
 module "create_public_lb" {
-    source  = "./modules/loadbalancer"
+    source  = "../../modules/loadbalancer"
 
     compartment_ocid              = "${var.compartment_ocid}"
     AD                            = "${var.AD}"
@@ -76,7 +76,7 @@ module "create_public_lb" {
 }
 
 module "create_private_lb" {
-    source  = "./modules/loadbalancer"
+    source  = "../../modules/loadbalancer"
 
     compartment_ocid              = "${var.compartment_ocid}"
     AD                            = "${var.AD}"
