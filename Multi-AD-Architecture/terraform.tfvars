@@ -11,6 +11,7 @@ public_lb_subnet_cidr_block = "172.16.30.0/24"
 private_lb_subnet_cidr_block = "172.16.40.0/24"
 database_subnet_cidr_block = "172.16.50.0/24"
 filestorage_subnet_cidr_block = "172.16.60.0/24"
+backup_subnet_cidr_block = "172.16.70.0/24"
 
 #customer onpremises DC network
 onpremises_network_cidr_block = "192.168.10.0/24"

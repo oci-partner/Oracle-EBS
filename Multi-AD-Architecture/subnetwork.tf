@@ -1,96 +1,112 @@
-resource "oci_core_subnet" "bastion_subnet" {
+resource "oci_core_subnet" "bastionnet" {
     #Required
     cidr_block = "${var.bastion_subnet_cidr_block}"
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
 
     #Optional
     availability_domain = ""
     #dhcp_options_id = "${oci_core_dhcp_options.test_dhcp_options.id}"
-    display_name = "bastion_subnet"
-    dns_label = "bastion"
+    display_name = "bastionnet"
+    dns_label = "bastionnet"
     prohibit_public_ip_on_vnic = "false"
     route_table_id = "${oci_core_route_table.bastion_rt.id}"
-    security_list_ids = ["${oci_core_security_list.bastion_sl.id}"]
+    security_list_ids = ["${oci_core_security_list.bastionseclist.id}"]
+}
+
+resource "oci_core_subnet" "backupnet" {
+    #Required
+    cidr_block = "${var.backup_subnet_cidr_block}"
+    compartment_id = "${var.compartment_ocid}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+
+    #Optional
+    availability_domain = ""
+    #dhcp_options_id = "${oci_core_dhcp_options.test_dhcp_options.id}"
+    display_name = "backupnet"
+    dns_label = "backupnet"
+    prohibit_public_ip_on_vnic = "true"
+    route_table_id = "${oci_core_route_table.database_rt.id}"
+    security_list_ids = ["${oci_core_security_list.backupseclist.id}"]
 }
 
 ### Application Sub Network
-resource "oci_core_subnet" "app_subnet" {
+resource "oci_core_subnet" "appnet" {
     #Required
     cidr_block = "${var.app_subnet_cidr_block}"
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
 
     #Optional
     availability_domain = ""
     #dhcp_options_id = "${oci_core_dhcp_options.test_dhcp_options.id}"
-    display_name = "app_subnet"
-    dns_label = "application"
+    display_name = "appnet"
+    dns_label = "appnet"
     prohibit_public_ip_on_vnic = "true"
     route_table_id = "${oci_core_route_table.app_rt.id}"
-    security_list_ids = ["${oci_core_security_list.app_sl.id}"]
+    security_list_ids = ["${oci_core_security_list.appseclist.id}"]//,"${oci_core_security_list.ebs12seclist.id}"]
 }
 ### Load Balancer Sub Network
-resource "oci_core_subnet" "public_lb_subnet" {
+resource "oci_core_subnet" "lbsubnetpub" {
     #Required
     cidr_block = "${var.public_lb_subnet_cidr_block}"
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
 
     #Optional
     availability_domain = ""
     #dhcp_options_id = "${oci_core_dhcp_options.test_dhcp_options.id}"
-    display_name = "public_lb_subnet"
-    dns_label = "publoadbalancer"
+    display_name = "lbsubnetpub"
+    dns_label = "lbsubnetpub"
     prohibit_public_ip_on_vnic = "false"
-    //route_table_id = "${oci_core_route_table.bastion_rt.id}"
-    security_list_ids = ["${oci_core_security_list.public_lb_sl.id}"]
+    route_table_id = "${oci_core_route_table.bastion_rt.id}"
+    security_list_ids = ["${oci_core_security_list.publbseclist.id}"]
 }
 
-resource "oci_core_subnet" "private_lb_subnet" {
+resource "oci_core_subnet" "lbsubnetpriv" {
     #Required
     cidr_block = "${var.private_lb_subnet_cidr_block}"
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
 
     #Optional
     availability_domain = ""
     #dhcp_options_id = "${oci_core_dhcp_options.test_dhcp_options.id}"
-    display_name = "private_lb_subnet"
-    dns_label = "priloadbalancer"
+    display_name = "lbsubnetpriv"
+    dns_label = "lbsubnetpriv"
     prohibit_public_ip_on_vnic = "true"
-    //route_table_id = "${oci_core_route_table.bastion_rt.id}"
-    security_list_ids = ["${oci_core_security_list.private_lb_sl.id}"]
+    route_table_id = "${oci_core_route_table.drg_rt.id}"
+    security_list_ids = ["${oci_core_security_list.privlbseclist.id}"]
 }
 
-resource "oci_core_subnet" "database_subnet" {
+resource "oci_core_subnet" "dbnet" {
     #Required
     cidr_block = "${var.database_subnet_cidr_block}"
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
 
     #Optional
     availability_domain = ""
     #dhcp_options_id = "${oci_core_dhcp_options.test_dhcp_options.id}"
-    display_name = "private_db_subnet"
-    dns_label = "database"
+    display_name = "dbnet"
+    dns_label = "dbnet"
     prohibit_public_ip_on_vnic = "true"
     route_table_id = "${oci_core_route_table.database_rt.id}"
-    security_list_ids = ["${oci_core_security_list.database_sl.id}"]
+    security_list_ids = ["${oci_core_security_list.dbseclist.id}"]//,"${oci_core_security_list.hexdseclist.id}"]
 }
 
-resource "oci_core_subnet" "fss_subnet" {
+resource "oci_core_subnet" "fssnet" {
     #Required
     cidr_block = "${var.filestorage_subnet_cidr_block}"
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
 
     #Optional
     availability_domain = ""
     #dhcp_options_id = "${oci_core_dhcp_options.test_dhcp_options.id}"
-    display_name = "fss_subnet"
-    dns_label = "filesystem"
+    display_name = "fssnet"
+    dns_label = "fssnet"
     prohibit_public_ip_on_vnic = "true"
-    //route_table_id = "${oci_core_route_table.bastion_rt.id}"
-    security_list_ids = ["${oci_core_security_list.fss_sl.id}"]
+    route_table_id = "${oci_core_route_table.fss_rt.id}"
+    security_list_ids = ["${oci_core_security_list.fssseclist.id}"]
 }

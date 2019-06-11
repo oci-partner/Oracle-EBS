@@ -2,7 +2,7 @@
 resource "oci_core_internet_gateway" "igateway" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
     #Optional
     enabled = "true"
     display_name = "igateway"
@@ -12,7 +12,7 @@ resource "oci_core_internet_gateway" "igateway" {
 resource "oci_core_nat_gateway" "natgateway" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
     #Optional
     block_traffic = "false"
     display_name = "natgateway"
@@ -25,9 +25,9 @@ resource "oci_core_service_gateway" "servicegateway" {
     compartment_id = "${var.compartment_ocid}"
     services {
         #Required
-        service_id = "${lookup(data.oci_core_services.servicegateway_services.services[0], "id")}"
+        service_id = "${lookup(data.oci_core_services.object_storage.services[0], "id")}"
     }
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
 
     #Optional
     display_name = "servicegateway"
@@ -44,7 +44,7 @@ resource "oci_core_drg" "drg" {
 resource "oci_core_drg_attachment" "drg_attachment" {
     #Required
     drg_id = "${oci_core_drg.drg.id}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${oci_core_vcn.ebsvcn.id}"
 
     #Optional
     display_name = "drgatt"

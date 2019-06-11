@@ -18,6 +18,7 @@ variable "public_lb_subnet_cidr_block" {}
 variable "private_lb_subnet_cidr_block" {}
 variable "database_subnet_cidr_block" {}
 variable "filestorage_subnet_cidr_block" {}
+variable "backup_subnet_cidr_block" {}
 variable "onpremises_network_cidr_block" {}
 
 ### EBS Variables
