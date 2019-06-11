@@ -30,7 +30,8 @@ Each directory represents one EBS environment structure on its own, with terrafo
 
 The following inputs are required for terraform execution:
 
-| Argument                   | Description |
+| Argument                   | Description                                                                                                                                                                                                                                                                                                                                                       |
+| -------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | TF_LOG | Configuration for the LOG level of terraform execution. |
 | TF_LOG_PATH | Local folder path where the log is created during terraform execution. |
 | TF_VAR_tenancy_ocid | Your OCI tenancy ID. |
