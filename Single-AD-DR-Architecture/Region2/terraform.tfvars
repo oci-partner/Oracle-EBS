@@ -2,18 +2,37 @@
 AD = ["1"]
 
 # CIDR block of VCN to be created
-vcn_cidr = "172.16.0.0/16"
+vcn_cidr = "10.0.0.0/16"
 
 #subnet cidr block
-bastion_subnet_cidr_block = "172.16.10.0/24"
-app_subnet_cidr_block = "172.16.20.0/24"
-public_lb_subnet_cidr_block = "172.16.30.0/24"
-private_lb_subnet_cidr_block = "172.16.40.0/24"
-database_subnet_cidr_block = "172.16.50.0/24"
-filestorage_subnet_cidr_block = "172.16.60.0/24"
+bastion_subnet_cidr_block = "10.0.4.0/24"
+app_subnet_cidr_block = "10.0.3.0/24"
+public_lb_subnet_cidr_block = "10.0.5.0/24"
+private_lb_subnet_cidr_block = "10.0.6.0/24"
+database_subnet_cidr_block = "10.0.1.0/24"
+filestorage_subnet_cidr_block = "10.0.7.0/24"
+backup_subnet_cidr_block = "10.0.2.0/24"
+
+#VCN Display Name
+vcn_displayname = "ebsvcn"
+
+# DNS label of VCN to be created
+vcn_dns_label = "ebsvcn"
+
+#Gateways Display Name
+int_gateway_displayname = "igateway"
+nat_gateway_displayname = "natgateway"
+srv_gateway_displayname = "servicegateway"
+drg_displayname = "drg"
+drg_att_displayname = "drgatt"
 
 #customer onpremises DC network
 onpremises_network_cidr_block = "192.168.10.0/24"
+
+#WAF Variables
+waas_policy_display_name = "ebs_waas_policy"
+public_allow_url = "/public"
+whitelist = ["192.168.127.127", "192.168.127.128"]
 
 # DNS label of VCN to be created
 vcn_dns_label = "ebsvcn"
@@ -67,7 +86,7 @@ db_version = "18.0.0.0"
 db_node_count = "1"
 
 #Shape of Database nodes
-db_instance_shape = "VM.Standard2.4"
+db_instance_shape = "VM.Standard2.2"
 
 #Database name
 db_name = "EBSCDB"

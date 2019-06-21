@@ -3,13 +3,13 @@ resource "oci_core_route_table" "bastion_rt" {
     compartment_id = "${var.compartment_ocid}"
     route_rules {
         #Required
-        network_entity_id = "${oci_core_internet_gateway.igateway.id}"
+        network_entity_id = "${module.create_network.igw_id}"
 
         #Optional
         destination = "0.0.0.0/0"
         destination_type = "CIDR_BLOCK"
     }
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
 
     #Optional
     display_name = "ebsbastionrt"
@@ -19,7 +19,7 @@ resource "oci_core_route_table" "database_rt" {
     compartment_id = "${var.compartment_ocid}"
     route_rules {
         #Required
-        network_entity_id = "${oci_core_nat_gateway.natgateway.id}"
+        network_entity_id = "${module.create_network.natgtw_id}"
         #Optional
         destination = "0.0.0.0/0"
         destination_type = "CIDR_BLOCK"
@@ -28,9 +28,9 @@ resource "oci_core_route_table" "database_rt" {
     route_rules {
         destination_type = "SERVICE_CIDR_BLOCK"
         destination = "${lookup(data.oci_core_services.object_storage.services[0], "cidr_block")}"
-        network_entity_id = "${oci_core_service_gateway.servicegateway.id}"
+        network_entity_id = "${module.create_network.svcgtw_id}"
     }
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "ebsdbroute"
 }
@@ -39,13 +39,13 @@ resource "oci_core_route_table" "app_rt" {
     compartment_id = "${var.compartment_ocid}"
     route_rules {
         #Required
-        network_entity_id = "${oci_core_nat_gateway.natgateway.id}"
+        network_entity_id = "${module.create_network.natgtw_id}"
         #Optional
         destination = "0.0.0.0/0"
         destination_type = "CIDR_BLOCK"
     }
 
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "ebsapproute"
 }
@@ -54,13 +54,13 @@ resource "oci_core_route_table" "fss_rt" {
     compartment_id = "${var.compartment_ocid}"
     route_rules {
         #Required
-        network_entity_id = "${oci_core_nat_gateway.natgateway.id}"
+        network_entity_id = "${module.create_network.natgtw_id}"
         #Optional
         destination = "0.0.0.0/0"
         destination_type = "CIDR_BLOCK"
     }
 
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "fssroute"
 }
@@ -69,13 +69,13 @@ resource "oci_core_route_table" "drg_rt" {
     compartment_id = "${var.compartment_ocid}"
     route_rules {
         #Required
-        network_entity_id = "${oci_core_drg.drg.id}"
+        network_entity_id = "${module.create_network.drggtw_id}"
         #Optional
         destination = "${var.onpremises_network_cidr_block}"
         destination_type = "CIDR_BLOCK"
     }
 
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "drgroute"
 }

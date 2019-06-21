@@ -11,6 +11,13 @@ variable "bastion_ssh_private_key" {}
 variable "ssh_public_key" {}
 variable "ssh_private_key" {}
 
+### Displaynames
+variable "vcn_displayname" {}
+variable "int_gateway_displayname" {}
+variable "nat_gateway_displayname" {}
+variable "srv_gateway_displayname" {}
+variable "drg_displayname" {}
+variable "drg_att_displayname" {}
 ### Network Variables
 variable "bastion_subnet_cidr_block" {}
 variable "app_subnet_cidr_block" {}
@@ -72,3 +79,11 @@ variable "db_nls_characterset" {}
 variable "db_node_count" {}
 variable "db_admin_password" {}
 variable "db_version" {}
+
+### WAF Variables
+variable "waas_policy_display_name" {}
+variable "public_allow_url" {}
+variable "whitelist" {
+  type    = "list"
+}
+

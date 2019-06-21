@@ -6,7 +6,7 @@ The Universal Permissive License (UPL), Version 1.0*/
 # Load Balancer
 resource "oci_load_balancer" "lb" {
   shape           = "${var.load_balancer_shape}"
-  count           = "${length(var.lb_count)}"
+  //count           = "${length(var.lb_count)}"
   compartment_id  = "${var.compartment_ocid}"
   subnet_ids      = ["${element(var.load_balancer_subnet, count.index)}"]
   display_name    = "${var.load_balancer_name}${element(var.AD,count.index)}${count.index+1}"
@@ -18,7 +18,8 @@ resource "oci_load_balancer_backend_set" "lb-bset" {
   depends_on        = ["oci_load_balancer.lb"]
   count             = "${length(var.lb_count)}"
   name              = "${var.load_balancer_name}${element(var.AD,count.index)}-bes${count.index + 1}"
-  load_balancer_id  = "${element(oci_load_balancer.lb.*.id, count.index)}"
+  //load_balancer_id  = "${element(oci_load_balancer.lb.*.id, count.index)}"
+  load_balancer_id = "${oci_load_balancer.lb.id}"
   policy            = "ROUND_ROBIN"
 
   health_checker {
@@ -40,7 +41,8 @@ resource "oci_load_balancer_backend_set" "lb-bset" {
 resource "oci_load_balancer_backend" "lb-bset-be" {
   depends_on        = ["oci_load_balancer.lb", "oci_load_balancer_backend_set.lb-bset"]
   count            = "${var.compute_instance_count}"
-  load_balancer_id = "${element(oci_load_balancer.lb.*.id, count.index)}"
+  //load_balancer_id = "${element(oci_load_balancer.lb.*.id, count.index)}"
+  load_balancer_id = "${oci_load_balancer.lb.id}"
   backendset_name  = "${element(oci_load_balancer_backend_set.lb-bset.*.name, count.index)}"
   ip_address       = "${element(var.be_ip_addresses, count.index)}"
   port             = "${var.compute_instance_listen_port}"
@@ -59,7 +61,8 @@ resource "oci_load_balancer_hostname" "hostname" {
     depends_on        = ["oci_load_balancer.lb"]
     count             = "${length(var.lb_count)}"
     hostname          = "${var.load_balancer_hostname}"
-    load_balancer_id  = "${element(oci_load_balancer.lb.*.id, count.index)}"
+    //load_balancer_id  = "${element(oci_load_balancer.lb.*.id, count.index)}"
+    load_balancer_id = "${oci_load_balancer.lb.id}"
     name              = "hostname${count.index + 1}"
 }
 
@@ -67,7 +70,8 @@ resource "oci_load_balancer_hostname" "hostname" {
 resource "oci_load_balancer_listener" "lb-listener" {
   depends_on                = ["oci_load_balancer.lb", "oci_load_balancer_backend_set.lb-bset","oci_load_balancer_hostname.hostname"]
   count                     = "${length(var.lb_count)}"
-  load_balancer_id          = "${element(oci_load_balancer.lb.*.id, count.index)}"
+  //load_balancer_id          = "${element(oci_load_balancer.lb.*.id, count.index)}"
+  load_balancer_id = "${oci_load_balancer.lb.id}"
   name                      = "${var.load_balancer_name}${element(var.AD,count.index)}-lsnr${count.index + 1}"
   default_backend_set_name  =  "${element(oci_load_balancer_backend_set.lb-bset.*.name, count.index)}"
   hostname_names            = ["${element(oci_load_balancer_hostname.hostname.*.name, count.index)}"]

@@ -1,80 +1,9 @@
-resource "oci_core_security_list" "bastion_sl" {
+resource "oci_core_security_list" "backupseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
-    display_name = "bastion_sl"
-
-    egress_security_rules {
-        #Required
-        destination = "0.0.0.0/0"
-        protocol = "all"
-        stateless = "false"
-    }
-
-    # Allow SSH to DB
-    egress_security_rules {
-        destination = "${oci_core_subnet.database_subnet.cidr_block}"
-        protocol = "6"
-        tcp_options {
-            max = "22"
-            min = "22"
-        }
-    }
-
-    # Allow SSH to Apps
-    egress_security_rules {
-        destination = "${oci_core_subnet.app_subnet.cidr_block}"
-        protocol = "6"
-        tcp_options {
-            max = "22"
-            min = "22"
-        }
-    }
-
-    ingress_security_rules {
-        #Required
-        protocol = "6" // TCP number protocol
-        source = "0.0.0.0/0"
-
-        source_type = "CIDR_BLOCK"
-        stateless = "false"
-        tcp_options {
-            #Optional
-            max = "22"
-            min = "22"
-        }
-    }
-
-    ingress_security_rules {
-        protocol  = "1" // ICMP
-        source    = "0.0.0.0/0"
-        stateless = "false"
-
-        icmp_options {
-            type = "3"
-            code = "4"
-        }
-    }
-
-    ingress_security_rules {
-        protocol  = "1" // ICMP
-        source    = "${oci_core_vcn.vcn.cidr_block}"
-        stateless = "false"
-
-        icmp_options {
-            type = "3"
-        }
-    }
-}
-
-
-resource "oci_core_security_list" "database_sl" {
-    #Required
-    compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
-    #Optional
-    display_name = "database_sl"
+    display_name = "backupseclist"
 
     egress_security_rules {
         #Required
@@ -87,103 +16,198 @@ resource "oci_core_security_list" "database_sl" {
             min = "443"
         }
     }
+}
+resource "oci_core_security_list" "bastionseclist" {
+    #Required
+    compartment_id = "${var.compartment_ocid}"
+    vcn_id = "${module.create_network.vcnid}"
+    #Optional
+    display_name = "bastionseclist"
 
     egress_security_rules {
+        #Required
         destination = "0.0.0.0/0"
         protocol = "all"
         stateless = "false"
     }
+
+    ingress_security_rules {
+        #Required
+        protocol = "6" // TCP number protocol
+        source = "0.0.0.0/0"
+        tcp_options {
+            #Optional
+            max = "22"
+            min = "22"
+        }
+    }
 }
-
-
-resource "oci_core_security_list" "app_sl" {
+resource "oci_core_security_list" "dbseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
-    display_name = "app_sl"
+    display_name = "dbseclist"
+
+    ingress_security_rules {
+        protocol = "6" // TCP
+        source = "${var.bastion_subnet_cidr_block}"
+        tcp_options {
+            min = "22"
+            max = "22"
+        }
+    }
+
+    ingress_security_rules {
+        protocol = "6" // TCP
+        source = "${var.app_subnet_cidr_block}"
+        tcp_options {
+            min = "1521"
+            max = "1521"
+        }
+    }
 
     egress_security_rules {
-        #Required
-        destination = "${oci_core_subnet.database_subnet.cidr_block}"
+        destination = "${var.app_subnet_cidr_block}"
         protocol = "6"
-        stateless = "false"
+    }
+
+    ingress_security_rules {
+        source = "${var.database_subnet_cidr_block}"
+        protocol = "6"
         tcp_options {
             max = "1521"
             min = "1521"
         }
     }
 
+    ### HEXADATA LIST
     ingress_security_rules {
-        protocol  = "6" // ICMP
-        source    = "0.0.0.0/0"
-        stateless = "false"
+        source = "${var.database_subnet_cidr_block}"
+        protocol = "6"
+    }
 
+    ingress_security_rules {
+        source = "${var.database_subnet_cidr_block}"
+        protocol = "1"
+    }
+
+    egress_security_rules {
+        destination = "0.0.0.0/0"
+        protocol = "6"
+        stateless = "false"
+    }
+
+    egress_security_rules {
+        destination = "0.0.0.0/0"
+        protocol = "1"
+        stateless = "false"
+    }
+}
+resource "oci_core_security_list" "appseclist" {
+    #Required
+    compartment_id = "${var.compartment_ocid}"
+    vcn_id = "${module.create_network.vcnid}"
+    #Optional
+    display_name = "appseclist"
+
+    ingress_security_rules {
+        protocol  = "6" // TCP
+        source    = "${var.bastion_subnet_cidr_block}"
         tcp_options {
-            max = "8888"
-            min = "8888"
+            max = "22"
+            min = "22"
         }
     }
 
     ingress_security_rules {
-        protocol  = "6" // ICMP
-        source    = "0.0.0.0/0"
-        stateless = "false"
+        protocol  = "6" // TCP
+        source    = "${var.public_lb_subnet_cidr_block}"
+        tcp_options {
+            max = "${var.load_balancer_listen_port}"
+            min = "${var.load_balancer_listen_port}"
+        }
+    }
+
+    ingress_security_rules {
+        protocol  = "6" // TCP
+        source    = "${var.private_lb_subnet_cidr_block}"
+        tcp_options {
+            max = "${var.load_balancer_listen_port}"
+            min = "${var.load_balancer_listen_port}"
+        }
+    }
+
+    egress_security_rules {
+        protocol = "6"
+        destination = "0.0.0.0/0"
+    }
+
+    ingress_security_rules {
+        protocol = "6"
+        source = "${var.app_subnet_cidr_block}"
+    }
+
+    ### EBS 12
+    ingress_security_rules {
+        source = "${var.app_subnet_cidr_block}"
+        protocol = "6"
+        tcp_options {
+            min = "7001"
+            max = "7002"
+        }
+    }
+
+    ingress_security_rules {
+        source = "${var.app_subnet_cidr_block}"
+        protocol = "6"
+        tcp_options {
+            min = "7201"
+            max = "7202"
+        }
+    }
+
+    ingress_security_rules {
+        source = "${var.app_subnet_cidr_block}"
+        protocol = "6"
+        tcp_options {
+            min = "7401"
+            max = "7402"
+        }
+    }
+}
+resource "oci_core_security_list" "publbseclist" {
+    #Required
+    compartment_id = "${var.compartment_ocid}"
+    vcn_id = "${module.create_network.vcnid}"
+    #Optional
+    display_name = "publbseclist"
+
+    ingress_security_rules {
+        source = "0.0.0.0/0"
+        protocol = "6"
 
         tcp_options {
             max = "443"
             min = "443"
         }
     }
-}
-
-resource "oci_core_security_list" "public_lb_sl" {
-    #Required
-    compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
-    #Optional
-    display_name = "public_lb_sl"
-
-    ingress_security_rules {
-        source = "0.0.0.0/0"
-        protocol = "6"
-        stateless = "false"
-
-        tcp_options {
-            max = "8000"
-            min = "8000"
-        }
-    }
 
     egress_security_rules {
-        #Required
-        destination = "${oci_core_subnet.app_subnet.cidr_block}"
+        destination = "${var.app_subnet_cidr_block}"
         protocol = "6"
-        stateless = "false"
         tcp_options {
-            max = "8000"
-            min = "8000"
-        }
-    }
-
-    egress_security_rules {
-        #Required
-        destination = "${oci_core_subnet.app_subnet.cidr_block}"
-        protocol = "6"
-        stateless = "false"
-        tcp_options {
-            max = "8000"
-            min = "8000"
+            min = "${var.load_balancer_listen_port}"
+            max = "${var.load_balancer_listen_port}"
         }
     }
 }
-
-resource "oci_core_security_list" "private_lb_sl" {
+resource "oci_core_security_list" "privlbseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
-    display_name = "private_lb_sl"
+    display_name = "privlbseclist"
 
     ingress_security_rules {
         source = "${var.onpremises_network_cidr_block}"
@@ -191,44 +215,30 @@ resource "oci_core_security_list" "private_lb_sl" {
         stateless = "false"
 
         tcp_options {
-            max = "8000"
-            min = "8000"
+            max = "443"
+            min = "443"
         }
     }
 
     egress_security_rules {
-        #Required
-        destination = "${oci_core_subnet.app_subnet.cidr_block}"
+        destination = "${var.app_subnet_cidr_block}"
         protocol = "6"
-        stateless = "false"
         tcp_options {
-            max = "8000"
-            min = "8000"
-        }
-    }
-
-    egress_security_rules {
-        #Required
-        destination = "${oci_core_subnet.app_subnet.cidr_block}"
-        protocol = "6"
-        stateless = "false"
-        tcp_options {
-            max = "8000"
-            min = "8000"
+            min = "${var.load_balancer_listen_port}"
+            max = "${var.load_balancer_listen_port}"
         }
     }
 }
-
-resource "oci_core_security_list" "fss_sl" {
+resource "oci_core_security_list" "fssseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.vcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
-    display_name = "fss_sl"
+    display_name = "fssseclist"
 
     ingress_security_rules {
         protocol  = "6" // TCP
-        source    = "${oci_core_vcn.vcn.cidr_block}"
+        source    = "${var.app_subnet_cidr_block}"
         stateless = "false"
 
         tcp_options {
@@ -239,7 +249,7 @@ resource "oci_core_security_list" "fss_sl" {
 
     ingress_security_rules {
         protocol  = "6" // TCP
-        source    = "${oci_core_vcn.vcn.cidr_block}"
+        source    = "${var.app_subnet_cidr_block}"
         stateless = "false"
 
         tcp_options {
@@ -250,7 +260,7 @@ resource "oci_core_security_list" "fss_sl" {
 
     ingress_security_rules {
         protocol  = "17" // UDP
-        source    = "${oci_core_vcn.vcn.cidr_block}"
+        source    = "${var.app_subnet_cidr_block}"
         stateless = "false"
 
         udp_options {
@@ -261,7 +271,7 @@ resource "oci_core_security_list" "fss_sl" {
 
     ingress_security_rules {
         protocol  = "17" // UDP
-        source    = "${oci_core_vcn.vcn.cidr_block}"
+        source    = "${var.app_subnet_cidr_block}"
         stateless = "false"
 
         udp_options {
@@ -272,7 +282,7 @@ resource "oci_core_security_list" "fss_sl" {
 
     egress_security_rules {
         #Required
-        destination = "${oci_core_vcn.vcn.cidr_block}"
+        destination = "${var.app_subnet_cidr_block}"
         protocol = "6" // TCP
         stateless = "false"
         tcp_options {
@@ -283,7 +293,7 @@ resource "oci_core_security_list" "fss_sl" {
 
     egress_security_rules {
         #Required
-        destination = "${oci_core_vcn.vcn.cidr_block}"
+        destination = "${var.app_subnet_cidr_block}"
         protocol = "6" // TCP
         stateless = "false"
         tcp_options {
@@ -294,12 +304,77 @@ resource "oci_core_security_list" "fss_sl" {
 
     egress_security_rules {
         #Required
-        destination = "${oci_core_vcn.vcn.cidr_block}"
+        destination = "${var.app_subnet_cidr_block}"
         protocol = "17" // UDP
         stateless = "false"
         udp_options {
             max = "111"
             min = "111"
+        }
+    }
+}
+resource "oci_core_security_list" "hexdseclist" {
+    count = 0
+    #Required
+    compartment_id = "${var.compartment_ocid}"
+    vcn_id = "${module.create_network.vcnid}"
+    #Optional
+    display_name = "hexdseclist"
+
+    ingress_security_rules {
+        source = "${var.database_subnet_cidr_block}"
+        protocol = "6"
+    }
+
+    ingress_security_rules {
+        source = "${var.database_subnet_cidr_block}"
+        protocol = "1"
+    }
+
+    egress_security_rules {
+        destination = "0.0.0.0/0"
+        protocol = "6"
+        stateless = "false"
+    }
+
+    egress_security_rules {
+        destination = "0.0.0.0/0"
+        protocol = "1"
+        stateless = "false"
+    }
+}
+resource "oci_core_security_list" "ebs12seclist" {
+    count = 0
+    #Required
+    compartment_id = "${var.compartment_ocid}"
+    vcn_id = "${module.create_network.vcnid}"
+    #Optional
+    display_name = "ebs12seclist"
+
+    ingress_security_rules {
+        source = "${var.app_subnet_cidr_block}"
+        protocol = "6"
+        tcp_options {
+            min = "7001"
+            max = "7002"
+        }
+    }
+
+    ingress_security_rules {
+        source = "${var.app_subnet_cidr_block}"
+        protocol = "6"
+        tcp_options {
+            min = "7201"
+            max = "7202"
+        }
+    }
+
+    ingress_security_rules {
+        source = "${var.app_subnet_cidr_block}"
+        protocol = "6"
+        tcp_options {
+            min = "7401"
+            max = "7402"
         }
     }
 }

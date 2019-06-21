@@ -6,9 +6,10 @@ module "create_bastion" {
     bastion_hostname_prefix = "${var.ebs_env_prefix}-bastion" //${substr(var.region, 3, 3)}"
     bastion_image           = "${data.oci_core_images.InstanceImageOCID.images.0.id}"
     bastion_instance_shape  = "${var.bastion_instance_shape}"
-    bastion_subnet          = ["${oci_core_subnet.bastionnet.id}"]
+    bastion_subnet          = ["${module.create_bastion_subnet.subnetid}"]
     bastion_ssh_public_key  = "${var.bastion_ssh_public_key}"
 }
+
 module "create_app" {
     source  = "../modules/compute"
 
@@ -20,14 +21,14 @@ module "create_app" {
     compute_hostname_prefix         = "${var.ebs_env_prefix}-app" //${substr(var.region, 3, 3)}"
     compute_image                   = "${data.oci_core_images.InstanceImageOCID.images.0.id}"
     compute_instance_shape          = "${var.ebs_app_instance_shape}"
-    compute_subnet                  = ["${oci_core_subnet.appnet.id}"]
+    compute_subnet                  = ["${module.create_appnet_subnet.subnetid}"]
     compute_ssh_public_key          = "${var.ssh_public_key}"
     compute_ssh_private_key         = "${var.ssh_private_key}"
     bastion_ssh_private_key         = "${var.bastion_ssh_private_key}"
     bastion_public_ip               = "${module.create_bastion.Bastion_Public_IPs[0]}"
     compute_instance_listen_port    = "${var.ebs_app_instance_listen_port}"
     fss_instance_prefix             = "${var.ebs_env_prefix}-fss" //${substr(var.region, 3, 3)}"
-    fss_subnet                      = ["${oci_core_subnet.fssnet.id}"]
+    fss_subnet                      = ["${module.create_fssnet_subnet.subnetid}"]
     fss_primary_mount_path          = "${var.ebs_fss_primary_mount_path}"
     fss_limit_size_in_gb            = "${var.ebs_fss_limit_size_in_gb}"
     compute_instance_user           = "${var.compute_instance_user}"
@@ -35,7 +36,7 @@ module "create_app" {
     compute_boot_volume_size_in_gb  = "${var.compute_boot_volume_size_in_gb}"
     timezone                        = "${var.timezone}"
 }
-/*
+
 module "create_db" {
     source  = "../modules/dbsystem"
 
@@ -48,7 +49,7 @@ module "create_db" {
     db_hostname_prefix    = "${var.ebs_env_prefix}-db" //${substr(var.region, 3, 3)}"
     db_size_in_gb         = "${var.db_size_in_gb}"
     db_license_model      = "${var.db_license_model}"
-    db_subnet             = ["${oci_core_subnet.dbnet.id}"]
+    db_subnet             = ["${module.create_dbnet_subnet.subnetid}"]
     db_ssh_public_key     = "${var.ssh_public_key}"
     db_admin_password     = "${var.db_admin_password}"
     db_name               = "${var.db_name}"
@@ -57,7 +58,7 @@ module "create_db" {
     db_version            = "${var.db_version}"
     db_pdb_name           = "${var.db_pdb_name}"
 }
-*/
+
 module "create_public_lb" {
     source  = "../modules/loadbalancer"
 
@@ -66,7 +67,7 @@ module "create_public_lb" {
     lb_count                      = ["1"]
     availability_domain           = ["${data.template_file.deployment_ad.*.rendered}"]
     load_balancer_shape           = "${var.load_balancer_shape}"
-    load_balancer_subnet          = ["${oci_core_subnet.lbsubnetpub.id}"]
+    load_balancer_subnet          = ["${module.create_lbsubnetpub_subnet.subnetid}"]
     load_balancer_name            = "${var.ebs_env_prefix}-publb" //${substr(var.region, 3, 3)}"
     load_balancer_hostname        = "${var.public_load_balancer_hostname}"
     load_balancer_listen_port     = "${var.load_balancer_listen_port}"
@@ -84,7 +85,7 @@ module "create_private_lb" {
     lb_count                      = ["1"]
     availability_domain           = ["${data.template_file.deployment_ad.*.rendered}"]
     load_balancer_shape           = "${var.load_balancer_shape}"
-    load_balancer_subnet          = ["${oci_core_subnet.lbsubnetpriv.id}"]
+    load_balancer_subnet          = ["${module.create_lbsubnetpriv_subnet.subnetid}"]
     load_balancer_name            = "${var.ebs_env_prefix}-prilb" //${substr(var.region, 3, 3)}"
     load_balancer_hostname        = "${var.private_load_balancer_hostname}"
     load_balancer_listen_port     = "${var.load_balancer_listen_port}"

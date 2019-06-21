@@ -1,7 +1,7 @@
 resource "oci_core_security_list" "backupseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "backupseclist"
 
@@ -20,7 +20,7 @@ resource "oci_core_security_list" "backupseclist" {
 resource "oci_core_security_list" "bastionseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "bastionseclist"
 
@@ -45,7 +45,7 @@ resource "oci_core_security_list" "bastionseclist" {
 resource "oci_core_security_list" "dbseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "dbseclist"
 
@@ -107,7 +107,7 @@ resource "oci_core_security_list" "dbseclist" {
 resource "oci_core_security_list" "appseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "appseclist"
 
@@ -179,7 +179,7 @@ resource "oci_core_security_list" "appseclist" {
 resource "oci_core_security_list" "publbseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "publbseclist"
 
@@ -205,7 +205,7 @@ resource "oci_core_security_list" "publbseclist" {
 resource "oci_core_security_list" "privlbseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "privlbseclist"
 
@@ -232,13 +232,13 @@ resource "oci_core_security_list" "privlbseclist" {
 resource "oci_core_security_list" "fssseclist" {
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "fssseclist"
 
     ingress_security_rules {
         protocol  = "6" // TCP
-        source    = "${oci_core_vcn.ebsvcn.cidr_block}"
+        source    = "${var.app_subnet_cidr_block}"
         stateless = "false"
 
         tcp_options {
@@ -249,7 +249,7 @@ resource "oci_core_security_list" "fssseclist" {
 
     ingress_security_rules {
         protocol  = "6" // TCP
-        source    = "${oci_core_vcn.ebsvcn.cidr_block}"
+        source    = "${var.app_subnet_cidr_block}"
         stateless = "false"
 
         tcp_options {
@@ -260,7 +260,7 @@ resource "oci_core_security_list" "fssseclist" {
 
     ingress_security_rules {
         protocol  = "17" // UDP
-        source    = "${oci_core_vcn.ebsvcn.cidr_block}"
+        source    = "${var.app_subnet_cidr_block}"
         stateless = "false"
 
         udp_options {
@@ -271,7 +271,7 @@ resource "oci_core_security_list" "fssseclist" {
 
     ingress_security_rules {
         protocol  = "17" // UDP
-        source    = "${oci_core_vcn.ebsvcn.cidr_block}"
+        source    = "${var.app_subnet_cidr_block}"
         stateless = "false"
 
         udp_options {
@@ -282,7 +282,7 @@ resource "oci_core_security_list" "fssseclist" {
 
     egress_security_rules {
         #Required
-        destination = "${oci_core_vcn.ebsvcn.cidr_block}"
+        destination = "${var.app_subnet_cidr_block}"
         protocol = "6" // TCP
         stateless = "false"
         tcp_options {
@@ -293,7 +293,7 @@ resource "oci_core_security_list" "fssseclist" {
 
     egress_security_rules {
         #Required
-        destination = "${oci_core_vcn.ebsvcn.cidr_block}"
+        destination = "${var.app_subnet_cidr_block}"
         protocol = "6" // TCP
         stateless = "false"
         tcp_options {
@@ -304,7 +304,7 @@ resource "oci_core_security_list" "fssseclist" {
 
     egress_security_rules {
         #Required
-        destination = "${oci_core_vcn.ebsvcn.cidr_block}"
+        destination = "${var.app_subnet_cidr_block}"
         protocol = "17" // UDP
         stateless = "false"
         udp_options {
@@ -317,7 +317,7 @@ resource "oci_core_security_list" "hexdseclist" {
     count = 0
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "hexdseclist"
 
@@ -347,7 +347,7 @@ resource "oci_core_security_list" "ebs12seclist" {
     count = 0
     #Required
     compartment_id = "${var.compartment_ocid}"
-    vcn_id = "${oci_core_vcn.ebsvcn.id}"
+    vcn_id = "${module.create_network.vcnid}"
     #Optional
     display_name = "ebs12seclist"
 

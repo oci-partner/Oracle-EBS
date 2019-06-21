@@ -223,19 +223,19 @@ private_load_balancer_hostname = "pri.ebs.example.com"
 To execute the terraform code, configure the variable files as described above, save your changes and load the environment variable "source env-vars" before calling any terraform command, this'll prevent you from imputing variables manually on the console.
 
 <p align="center">
-  <img src="./printscreens/PrintScreen-00.jpg">
+  <img src="./docs/PrintScreen-00.jpg">
 </p>
 
  After loading the variables, you can perform the "terraform init" command, to load the modules and OCI terraform provider.
  
  <p align="center">
-  <img src="./printscreens/PrintScreen-01.jpg">
+  <img src="./docs/PrintScreen-01.jpg">
 </p>
 
 After executing terraform init, you can perform "terraform apply" to create your environment, before submitting your environment, please review all changes on the OCI tenant that you are requesting to create, make sure you have the necessary service limits to create all the infrastructure and instances on your tenant.
 
 <p align="center">
-  <img src="./printscreens/PrintScreen-03.jpg">
+  <img src="./docs/PrintScreen-02.jpg">
 </p>
 
 This sample created 58 resources on OCI tenant.
