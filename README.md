@@ -26,7 +26,7 @@ Each directory represents one EBS environment structure on its own, with terrafo
   - [Region1]: The first active region for EBS deployment.
   - [Region2]: The DR passive region for EBS deployment.
     
-## Inputs required in the environment "env-vars" file
+### Inputs required in the environment "env-vars" file
 
 The following inputs are required for terraform execution:
 
@@ -45,9 +45,8 @@ The following inputs are required for terraform execution:
 | TF_VAR_bastion_ssh_public_key | The path to your local public key, that you configure on the provisioned the bastion instance on OCI tenancy for this terraform script. |
 | TF_VAR_bastion_ssh_private_key | The path to your local private key, that you configure on the provisioned the bastion instance on OCI tenancy for this terraform script. |
 
-                                                                                                                                                               |
+#### Sample env-vars file to execute
 
-##### Sample env-vars file to execute
 
 ```hcl
 #!/bin/bash
@@ -72,7 +71,7 @@ export TF_VAR_ssh_private_key=~/.oci/ssh_keys/key
 export TF_VAR_bastion_ssh_public_key=~/.ssh/id_rsa.pub
 export TF_VAR_bastion_ssh_private_key=~/.ssh/id_rsa
 ```
-## Inputs required in the terraform.tfvars file
+### Inputs required in the terraform.tfvars file
 
 The following inputs are required for terraform modules:
 
@@ -114,16 +113,27 @@ The following inputs are required for terraform modules:
 | load_balancer_hostname     | Hostname of the load balancer.                                                                                                                                                                                                                                                                                                                                    |
 | load_balancer_shape        | Shape of the load balancer.                                                                                                                                                                                                                                                                                                                                       |
 | load_balancer_listen_port  | Listen port of the load balancer.                                                                                                                                                                                                                                                                                                                                 |
-                                                                                                                                                               |
 
 ##### Sample terraform.tfvars file to create Oracle E-Business Suite infrastructure in multiple availability domain architecture
 
 ```hcl
 # AD (Availability Domain to use for creating EBS infrastructure) 
-AD = ["1"]
+AD = ["1","2"]
 
 # CIDR block of VCN to be created
-vcn_cidr = "172.16.0.0/16"
+vcn_cidr = "10.0.0.0/16"
+
+#subnet cidr block
+bastion_subnet_cidr_block = "10.0.4.0/24"
+app_subnet_cidr_block = "10.0.3.0/24"
+public_lb_subnet_cidr_block = "10.0.5.0/24"
+private_lb_subnet_cidr_block = "10.0.6.0/24"
+database_subnet_cidr_block = "10.0.1.0/24"
+filestorage_subnet_cidr_block = "10.0.7.0/24"
+backup_subnet_cidr_block = "10.0.2.0/24"
+
+#customer onpremises DC network
+onpremises_network_cidr_block = "192.168.10.0/24"
 
 # DNS label of VCN to be created
 vcn_dns_label = "ebsvcn"
@@ -144,10 +154,13 @@ compute_boot_volume_size_in_gb = "100"
 compute_instance_user = "opc"
 
 #Environment prefix to define name of resources
-ebs_env_prefix = "ebsdemo"
+ebs_env_prefix = "ebsenv"
+
+#Environment prefix to define name of DB
+db_hostname_prefix = "dbdemo"
 
 # Number of application instances to be created
-ebs_app_instance_count = "2"
+ebs_app_instance_count = "6"
 
 # Shape of app instance
 ebs_app_instance_shape = "VM.Standard2.2"
@@ -168,13 +181,13 @@ db_edition = "ENTERPRISE_EDITION_EXTREME_PERFORMANCE"
 db_license_model = "LICENSE_INCLUDED"
 
 # Database version
-db_version = "12.1.0.2"
+db_version = "18.0.0.0"
 
 # Number of database nodes
 db_node_count = "1"
 
 #Shape of Database nodes
-db_instance_shape = "VM.Standard2.1"
+db_instance_shape = "VM.Standard2.4"
 
 #Database name
 db_name = "EBSCDB"
@@ -183,7 +196,7 @@ db_name = "EBSCDB"
 db_size_in_gb = "256"
 
 # Database administration (sys) password
-db_admin_password = "<password>"
+db_admin_password = "<your password>"
 
 # Characterset of database
 db_characterset = "AL32UTF8"
@@ -194,12 +207,35 @@ db_nls_characterset = "AL16UTF16"
 # Pluggable database name
 db_pdb_name = "DUMMYPDB"
 
-# Hostname of Load Balancer
-load_balancer_hostname = "ebs.example.com"
-
 # Shape of Load Balancer
 load_balancer_shape = "100Mbps"
 
 #Listen port of load balancer
-load_balancer_listen_port = "8888"
+load_balancer_listen_port = "8000"
+
+#Public Hostname of Load Balancer
+public_load_balancer_hostname = "pub.ebs.example.com"
+
+#Private Hostname of Load Balancer
+private_load_balancer_hostname = "pri.ebs.example.com"
 ```
+### How to execute
+To execute the terraform code, configure the variable files as described above, save your changes and load the environment variable "source env-vars" before calling any terraform command, this'll prevent you from imputing variables manually on the console.
+
+<p align="center">
+  <img src="./printscreens/PrintScreen-00.jpg">
+</p>
+
+ After loading the variables, you can perform the "terraform init" command, to load the modules and OCI terraform provider.
+ 
+ <p align="center">
+  <img src="./printscreens/PrintScreen-01.jpg">
+</p>
+
+After executing terraform init, you can perform "terraform apply" to create your environment, before submitting your environment, please review all changes on the OCI tenant that you are requesting to create, make sure you have the necessary service limits to create all the infrastructure and instances on your tenant.
+
+<p align="center">
+  <img src="./printscreens/PrintScreen-03.jpg">
+</p>
+
+This sample created 58 resources on OCI tenant.
