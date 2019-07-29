@@ -1,8 +1,3 @@
-/*Copyright © 2018, Oracle and/or its affiliates. All rights reserved.
-
-The Universal Permissive License (UPL), Version 1.0*/
-
-
 locals {
   ebsfss_private_ips = "${flatten(concat(data.oci_core_private_ips.ip_mount_target.*.private_ips))}"
 }

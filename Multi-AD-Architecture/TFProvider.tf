@@ -6,4 +6,6 @@ provider "oci" {
    private_key_path = "${var.private_key_path}"
    region = "${var.region}"
    disable_auto_retries = "false"
+
+   //version = "=3.30.0"
 }

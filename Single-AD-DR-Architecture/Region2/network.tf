@@ -1,6 +1,5 @@
-# Virtual Cloud Network (VCN)
 module "create_network" {
-  source = "../../modules/network/vcn"
+  source = "../modules/network/vcn"
     
   compartment_ocid = "${var.compartment_ocid}"
   vcn_cidr = "${var.vcn_cidr}"
@@ -13,7 +12,7 @@ module "create_network" {
 }
 ### SUBNETS
 module "create_bastion_subnet" {
-  source = "../../modules/network/subnets"
+  source = "../modules/network/subnets"
   
   vcn_subnet_cidr = "${var.bastion_subnet_cidr_block}"
   compartment_ocid = "${var.compartment_ocid}"
@@ -25,7 +24,7 @@ module "create_bastion_subnet" {
   subnet_security_list_ids = ["${oci_core_security_list.bastionseclist.id}"]
 }
 module "create_backupnet_subnet" {
-  source = "../../modules/network/subnets"
+  source = "../modules/network/subnets"
 
   vcn_subnet_cidr = "${var.backup_subnet_cidr_block}"
   compartment_ocid = "${var.compartment_ocid}"
@@ -37,7 +36,7 @@ module "create_backupnet_subnet" {
   subnet_security_list_ids = ["${oci_core_security_list.backupseclist.id}"]  
 }
 module "create_appnet_subnet" {
-  source = "../../modules/network/subnets"
+  source = "../modules/network/subnets"
 
   vcn_subnet_cidr = "${var.app_subnet_cidr_block}"
   compartment_ocid = "${var.compartment_ocid}"
@@ -49,7 +48,7 @@ module "create_appnet_subnet" {
   subnet_security_list_ids = ["${oci_core_security_list.appseclist.id}"]  
 }
 module "create_lbsubnetpub_subnet" {
-  source = "../../modules/network/subnets"
+  source = "../modules/network/subnets"
 
   vcn_subnet_cidr = "${var.public_lb_subnet_cidr_block}"
   compartment_ocid = "${var.compartment_ocid}"
@@ -61,7 +60,7 @@ module "create_lbsubnetpub_subnet" {
   subnet_security_list_ids = ["${oci_core_security_list.publbseclist.id}"]  
 }
 module "create_lbsubnetpriv_subnet" {
-  source = "../../modules/network/subnets"
+  source = "../modules/network/subnets"
 
   vcn_subnet_cidr = "${var.private_lb_subnet_cidr_block}"
   compartment_ocid = "${var.compartment_ocid}"
@@ -73,7 +72,7 @@ module "create_lbsubnetpriv_subnet" {
   subnet_security_list_ids = ["${oci_core_security_list.privlbseclist.id}"]  
 }
 module "create_dbnet_subnet" {
-  source = "../../modules/network/subnets"
+  source = "../modules/network/subnets"
 
   vcn_subnet_cidr = "${var.database_subnet_cidr_block}"
   compartment_ocid = "${var.compartment_ocid}"
@@ -85,7 +84,7 @@ module "create_dbnet_subnet" {
   subnet_security_list_ids = ["${oci_core_security_list.dbseclist.id}"] 
 }
 module "create_fssnet_subnet" {
-  source = "../../modules/network/subnets"
+  source = "../modules/network/subnets"
 
   vcn_subnet_cidr = "${var.filestorage_subnet_cidr_block}"
   compartment_ocid = "${var.compartment_ocid}"

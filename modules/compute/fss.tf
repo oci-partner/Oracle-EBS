@@ -1,8 +1,3 @@
-/*Copyright © 2018, Oracle and/or its affiliates. All rights reserved.
-
-The Universal Permissive License (UPL), Version 1.0*/
-
-
 # Filesystem
 resource "oci_file_storage_file_system" "fss" {
   count               = "${length(var.availability_domain)}"

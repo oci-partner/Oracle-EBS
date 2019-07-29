@@ -12,7 +12,7 @@ resource "oci_core_route_table" "bastion_rt" {
     vcn_id = "${module.create_network.vcnid}"
 
     #Optional
-    display_name = "ebsbastionrt"
+    display_name = "${var.bastion_displayname_rt}"
 }
 resource "oci_core_route_table" "database_rt" {
     #Required
@@ -32,7 +32,7 @@ resource "oci_core_route_table" "database_rt" {
     }
     vcn_id = "${module.create_network.vcnid}"
     #Optional
-    display_name = "ebsdbroute"
+    display_name = "${var.database_displayname_rt}"
 }
 resource "oci_core_route_table" "app_rt" {
     #Required
@@ -47,7 +47,7 @@ resource "oci_core_route_table" "app_rt" {
 
     vcn_id = "${module.create_network.vcnid}"
     #Optional
-    display_name = "ebsapproute"
+    display_name = "${var.app_displayname_rt}"
 }
 resource "oci_core_route_table" "fss_rt" {
     #Required
@@ -62,7 +62,7 @@ resource "oci_core_route_table" "fss_rt" {
 
     vcn_id = "${module.create_network.vcnid}"
     #Optional
-    display_name = "fssroute"
+    display_name = "${var.fss_displayname_rt}"
 }
 resource "oci_core_route_table" "drg_rt" {
     #Required
@@ -77,5 +77,5 @@ resource "oci_core_route_table" "drg_rt" {
 
     vcn_id = "${module.create_network.vcnid}"
     #Optional
-    display_name = "drgroute"
+    display_name = "${var.drg_displayname_rt}"
 }

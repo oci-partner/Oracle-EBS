@@ -29,17 +29,16 @@ variable "backup_subnet_cidr_block" {}
 variable "onpremises_network_cidr_block" {}
 
 ### EBS Variables
-variable "ebs_env_prefix" {}
-variable "ebs_app_instance_count" {}
-variable "ebs_app_instance_shape" {}
+variable "env_prefix" {}
+variable "app_instance_count" {}
+variable "app_instance_shape" {}
 variable "compute_boot_volume_size_in_gb" {}
-variable "ebs_app_instance_listen_port" {}
-variable "ebs_fss_limit_size_in_gb" {}
+variable "app_instance_listen_port" {}
+variable "fss_limit_size_in_gb" {}
 variable "compute_instance_user" {}
 variable "bastion_user" {}
-variable "ebs_fss_primary_mount_path" {}
+variable "fss_primary_mount_path" {}
 variable "timezone" {}
-
 
 ### Instances Variables
 variable "bastion_instance_shape" {
@@ -86,4 +85,20 @@ variable "public_allow_url" {}
 variable "whitelist" {
   type    = "list"
 }
+variable "enable_waas" {}
 
+### Autoscale Variables
+variable "enable_autoscaling_pools" {}
+variable "autoscale_displayName" {}
+variable "initialCapacity" {}
+variable "maxCapacity" {}
+variable "minCapacity" {}
+variable "scaleUpCPUthreshold" {}
+variable "scaleInCPUthreshold" {}
+
+### Other
+variable "bastion_displayname_rt" {}
+variable "database_displayname_rt" {}
+variable "app_displayname_rt" {}
+variable "fss_displayname_rt" {}
+variable "drg_displayname_rt" {}
