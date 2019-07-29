@@ -239,3 +239,7 @@ After executing terraform init, you can perform "terraform apply" to create your
 </p>
 
 This sample created 58 resources on OCI tenant.
+
+Thanks for reading
+
+Thanks for reading
